@@ -10,13 +10,13 @@ video_url = None
 try:
     if(len(sys.argv[1]) > 5):        
         video_url = sys.argv[1]
-        print("x" + " Was given as an argument")
 except:
     print("No Input Provided")
 
 # download video audio
 def download_mp3(url, output_file_name):
     ydl_opts = {
+        'verbose': True,
         'format': 'bestaudio/best',
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
@@ -25,8 +25,13 @@ def download_mp3(url, output_file_name):
         }],
         'outtmpl': f'{output_file_name}.%(ext)s',
     }
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([url])
+    try:
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+    except youtube_dl.utils.DownloadError as e:
+        print("Error:", e)
+    except Exception as e:
+        print("An error occurred:", e)
 
 # get text from audio
 def transcribe_audio(audio_file_path):
